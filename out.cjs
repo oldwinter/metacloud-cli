@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -17260,10 +17261,10 @@ async function init() {
       {
         type: "select",
         name: "dindOrDfromD",
-        message: "DinD(docker in docker) or DfromD(docker from docker)",
+        message: "dind(docker in docker) or dfromd(docker from docker)",
         choices: [
-          { title: "DinD (recommended)", description: "create a container including new docker and k8s", value: "DinD" },
-          { title: "DfromD", description: "create a container reuse your host resource like docker and k8s", value: "DfromD", disabled: true }
+          { title: "dind (recommended)", description: "create a container including new docker and k8s", value: "dind" },
+          { title: "dfromd", description: "create a container reuse your host resource like docker and k8s", value: "dfromd", disabled: true }
         ],
         initial: 0
       },
@@ -17274,39 +17275,41 @@ async function init() {
         choices: [
           { title: "frontend", description: "quick start a browser to see what is this thing", value: "frontend" },
           { title: "fullstack", description: "slow start to create some containers", value: "fullstack" },
-          { title: "both+devops(recommended)", description: "feeling project whole feature", value: "devops" }
+          { title: "devops(recommended)", description: "feeling project whole feature", value: "devops" }
         ],
         initial: 0
       }
     ];
-    let res = (0, import_prompts.default)(questions);
+    const onCancel = () => {
+      console.log(source_default.red("\u2716") + " Operation cancelled");
+      process.exit(1);
+    };
+    let res = (0, import_prompts.default)(questions, { onCancel });
     return res;
   }
   (0, import_clear.default)();
   await banner();
   let result = await question();
-  console.log("your choice: ");
-  console.log(result);
   const {
     localOrRemote,
     dindOrDfromD,
     devRole
   } = result;
-  console.log(boxen("Scaffolding project ...", { padding: 1 }));
+  console.log(boxen(`${source_default.green("now:")} ${source_default.cyan(localOrRemote)}, run a ${source_default.cyan(dindOrDfromD)} env for ${source_default.cyan(devRole)}`, { padding: 1 }));
   (0, import_child_process.execSync)("rm -rf metacloud");
   const spinnerCloneCode = ora("git clone ...").start();
-  let child = (0, import_child_process.exec)("git clone https://github.com/oldwinter/metacloud.git", (error, stdout, stderr) => {
+  let childGit = (0, import_child_process.exec)("git clone https://github.com/oldwinter/metacloud.git", (error, stdout, stderr) => {
     if (error !== null) {
       console.log("exec error: " + error);
     }
   });
-  child.on("close", function(code) {
-    spinnerCloneCode.succeed("git clone done\n");
+  childGit.on("close", function(code) {
+    spinnerCloneCode.succeed("git clone done");
     const spinnerNpmInstall = ora("npm install ...").start();
-    let child2 = (0, import_child_process.exec)("npm install -g devcontainer");
-    child2.on("close", function(code2) {
+    let childNpm = (0, import_child_process.exec)("npm install -g devcontainer");
+    childNpm.on("close", function(code2) {
       spinnerNpmInstall.succeed("npm install done");
-      if (localOrRemote === "locally" && dindOrDfromD === "DinD") {
+      if (localOrRemote === "locally" && dindOrDfromD === "dind") {
         if (devRole === "frontend") {
           console.log(`${source_default.bold.green("cd metacloud/portal")}`);
           console.log(`${source_default.bold.green("npm install")}`);
@@ -17317,18 +17320,16 @@ async function init() {
           console.log(`${source_default.bold.green("docker compose up")}`);
         }
         if (devRole === "devops") {
-          console.log(`${source_default.bold.green("cd metacloud")}`);
-          console.log(`${source_default.bold.green("minikube start")}`);
-          console.log(`${source_default.bold.green("helm intsall ")}`);
           const spinnerDockerBuild = ora("devcontainer build ...").start();
-          let child3 = (0, import_child_process.exec)("devcontainer build ./metacloud");
-          child3.on("close", function(code3) {
+          let childBuild = (0, import_child_process.exec)("devcontainer build ./metacloud");
+          childBuild.on("close", function(code3) {
             spinnerDockerBuild.succeed("devcontainer build done");
           });
+          console.log(`${source_default.bold.green("open vscode")}`);
+          console.log(`${source_default.bold.green("open folder in container")}`);
         }
       }
     });
-    console.log();
   });
 }
 init().catch((e) => {
