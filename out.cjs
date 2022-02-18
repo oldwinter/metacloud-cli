@@ -17294,21 +17294,21 @@ async function init() {
   } = result;
   console.log(boxen("Scaffolding project ...", { padding: 1 }));
   (0, import_child_process.execSync)("rm -rf metacloud");
-  const spinner = ora("git clone ...").start();
+  const spinnerCloneCode = ora("git clone ...").start();
   let child = (0, import_child_process.exec)("git clone https://github.com/oldwinter/metacloud.git", (error, stdout, stderr) => {
     if (error !== null) {
       console.log("exec error: " + error);
     }
   });
   child.on("close", function(code) {
-    spinner.succeed("git clone done\n");
-    const spinner2 = ora("npm install ...").start();
-    let child1 = (0, import_child_process.exec)("npm install -g devcontainer");
-    child1.on("close", function(code2) {
-      spinner2.succeed("npm install done");
+    spinnerCloneCode.succeed("git clone done\n");
+    const spinnerNpmInstall = ora("npm install ...").start();
+    let child2 = (0, import_child_process.exec)("npm install -g devcontainer");
+    child2.on("close", function(code2) {
+      spinnerNpmInstall.succeed("npm install done");
       if (localOrRemote === "locally" && dindOrDfromD === "DinD") {
         if (devRole === "frontend") {
-          console.log(`${source_default.bold.green("cd metacloud")}`);
+          console.log(`${source_default.bold.green("cd metacloud/portal")}`);
           console.log(`${source_default.bold.green("npm install")}`);
           console.log(`${source_default.bold.green("npm run dev")}`);
         }
@@ -17318,7 +17318,13 @@ async function init() {
         }
         if (devRole === "devops") {
           console.log(`${source_default.bold.green("cd metacloud")}`);
-          console.log(`${source_default.bold.green("docker compose up")}`);
+          console.log(`${source_default.bold.green("minikube start")}`);
+          console.log(`${source_default.bold.green("helm intsall ")}`);
+          const spinnerDockerBuild = ora("devcontainer build ...").start();
+          let child3 = (0, import_child_process.exec)("devcontainer build ./metacloud");
+          child3.on("close", function(code3) {
+            spinnerDockerBuild.succeed("devcontainer build done");
+          });
         }
       }
     });

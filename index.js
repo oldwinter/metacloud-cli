@@ -111,22 +111,24 @@ async function init() {
       if (localOrRemote ==='locally' && dindOrDfromD === 'DinD'){
         if (devRole === "frontend"){
           // spinner.succeed('Done. Now run:\n')
-          console.log(`${chalk.bold.green('cd metacloud')}`)
+          // 等微软修复devcontainer的open功能
+
+          console.log(`${chalk.bold.green('cd metacloud/portal')}`)
           console.log(`${chalk.bold.green('npm install')}`)
           console.log(`${chalk.bold.green('npm run dev')}`)
         }
         if (devRole === "backend"){
-          // spinner.succeed('Done. Now run:\n')
           console.log(`${chalk.bold.green('cd metacloud')}`)
           console.log(`${chalk.bold.green('docker compose up')}`)
-          // console.log(`${chalk.bold.green('npm run dev')}`)
-    
         }
         if (devRole === "devops"){
-          // spinner.succeed('Done. Now run:\n')
-          console.log(`${chalk.bold.green('cd metacloud')}`)
-          console.log(`${chalk.bold.green('docker compose up')}`)
-          // console.log(`${chalk.bold.green('npm run dev')}`)
+          const spinnerDockerBuild = ora('devcontainer build ...').start()
+          let child = exec('devcontainer build ./metacloud')
+          child.on('close', function(code){
+            spinnerDockerBuild.succeed('devcontainer build done')
+          })
+          console.log(`${chalk.bold.green('open vscode')}`)
+          console.log(`${chalk.bold.green('open folder in container')}`)
     
         }
       }
