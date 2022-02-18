@@ -7,15 +7,15 @@
     "ora": "^6.0.1",
     "prompts": "^2.4.2"
   },
-  "name": "create-metacloud-cli",
+  "name": "create-metacloud",
   "version": "1.0.6",
   "main": "index.js",
   "bin": {
     "mc": "out.cjs"
   },
   "devDependencies": {
-    "zx": "^4.3.0",
-    "esbuild": "^0.14.22"
+    "esbuild": "^0.14.22",
+    "zx": "^4.3.0"
   },
   "scripts": {
     "dev": "npm run build && node out.cjs",
